@@ -36,11 +36,11 @@
         const API_URL = 'http://localhost:8080/api';
         const TODO_API_URL = `${API_URL}/todos`;
 
-        const todoText = document.getElementById('todoText'); //tutaj pobieramy z formularza to do?
+        const todoText = document.getElementById('todoText'); 
 
         fetch(TODO_API_URL)
             .then(processOkResponse)
-            .then(todos => todos.forEach(createNewTodo)); // to odnosi się do pozniejszego create new todo
+            .then(todos => todos.forEach(createNewTodo)); 
 
         document.getElementById('addTodo').addEventListener('click', (event) => { // to do przycisku
             event.preventDefault();
@@ -79,7 +79,7 @@
                     event.preventDefault();
                     fetch(`${TODO_API_URL}/${todo.id}`, { method: 'PUT' })
                         .then(processOkResponse)
-                        .then(updatedTodo => checkbox.checked = !!updatedTodo.done) //co to za wykrzykniki?
+                        .then(updatedTodo => checkbox.checked = !!updatedTodo.done) 
                         .catch(console.warn);
                 });
             label.appendChild(checkbox);  //to nie wiem o co chodzi
@@ -134,7 +134,7 @@
             }
             throw new Error(`Status not 200 (${response.status})`);
         }
-    }) (); //nie ograniam tej konstrukcji tzn ze to jest funkcja bez nazwy i caly kod jest w tej funkcji??
+    }) (); 
 </script>
 </body>
 </html>
