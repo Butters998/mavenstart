@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  ~ Hibernate, Relational Persistence for Idiomatic Java
+  ~
+  ~ License: GNU Lesser General Public License (LGPL), version 2.1 or later.
+  ~ See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  -->
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <!-- Database connection settings -->
+        <property name="connection.driver_class">org.h2.Driver</property>  <!--hibernate potrzebuje klasy która powie mu jaki sterowniki do BD powinien wykorzystać- ster spec. do bazy h2-->
+        <property name="connection.url">jdbc:h2:file:C:/projekty_intelij/udemy_web_dev/udemy_mavenstart/mavenstart/db</property> <!--adres do połączenia się do tej bazy :mem: to znaczy ze jest trzymana w pamięci -->
+        <property name="connection.username">sa</property>
+        <property name="connection.password"></property>
+
+        <!-- JDBC connection pool (use the built-in) to oznacza ile możemy mieć połączeń równoległych   -->
+        <property name="connection.pool_size">10</property>
+
+        <!-- SQL dialect hibernate generuje wiele zapytań sql - i dialect pozwala optymalizować te zapytania dodatkowo dla bazy H2 będzie to h2dialect -->
+        <property name="dialect">org.hibernate.dialect.H2Dialect</property>
+
+        <!-- Disable the second-level cache to wyrzuciliśmy bo powiedział że u nas nie działa xd  -->
+
+
+        <!-- Echo all executed SQL to stdout- ciakawa opcja w developerskicm wszystkie sql logowane w konsoli -->
+        <property name="show_sql">true</property>
+
+        <!-- Drop and re-create the database schema on startup w jaki sposob ma rozpoczac prace z baza create- czyli za każdym razem nowa baza  -->
+        <property name="hbm2ddl.auto">validate</property>
+
+        <!-- Names the annotated entity class usunięte -->
+        <!--mapowanie-->
+        <mapping class="io.github.mat3e.lang.Lang"/>
+        <mapping class="io.github.mat3e.todo.Todo"/>
+
+
+    </session-factory>
+
+</hibernate-configuration>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ULTIAMTE TO DO LIST</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css"
+        integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<main style="width: 40%; margin: 0 auto">
+    <div id="welcome" style="text-align: center">
+        <h1>Introduce yourself</h1>
+    </div>
+    <form id="welcomeForm" class="pure-form pure-g pure-form-aligned">
+        <input class="pure-input-rounded pure-u-1" name="name" placeholder="name">
+        <fieldset id="langs" class="pure-u-1 pure-control-group">Loading...</fieldset>
+        <button id="btn" class="pure-button pure-button-primary pure-u-1">Submit</button>
+    </form>
+    <form id="todoForm" class="pure-form" style="display: none; text-align: left">
+        <fieldset>
+            <input id="todoText" class="pure-input-rounded pure-input-2-3" placeholder="new TODO">
+            <button id="addTodo" class="pure-button pure-button-primary">+</button>
+        </fieldset>
+
+        <fieldset id="allTodos"></fieldset>
+        <div id="btn_edit">
+            <button type="button">Edytuj zadania</button>
+        </div>
+    </form>
+
+</main>
+<script>
+    (function()
+    {
+        const API_URL = 'http://localhost:8080/api';
+        const TODO_API_URL = `${API_URL}/todos`;
+
+        const todoText = document.getElementById('todoText'); //tutaj pobieramy z formularza to do?
+
+        fetch(TODO_API_URL)
+            .then(processOkResponse)
+            .then(todos => todos.forEach(createNewTodo)); // to odnosi się do pozniejszego create new todo
+
+        document.getElementById('addTodo').addEventListener('click', (event) => { // to do przycisku
+            event.preventDefault();
+            fetch(TODO_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json' //to do headerow-sprawdzanie
+                },
+                body: JSON.stringify({text: todoText.value})
+            })
+                .then(processOkResponse)
+                .then(createNewTodo)
+                .then(() => todoText.value = '')
+                .catch(console.warn);
+        });
+
+        function createNewTodo(todo,del) {      //funkcja do tworzenia pola z todosami
+            const label = document.createElement('label');
+           // const btn = document.createElement('button');
+            label.classList.add('pure-checkbox');
+            //btn.classList.add('pure-button');
+            //btn.innerText = 'delete';
+            //"New Button"
+           // document.body.appendChild(btn);
+            //`<button>New Button<>/button`
+
+            const checkbox = document.createElement('input');
+            //const button = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = todo.done;
+            //button.type = 'button';
+            //button. = del.done;
+            checkbox.addEventListener('click',
+                (event) => {
+                    event.preventDefault();
+                    fetch(`${TODO_API_URL}/${todo.id}`, { method: 'PUT' })
+                        .then(processOkResponse)
+                        .then(updatedTodo => checkbox.checked = !!updatedTodo.done) //co to za wykrzykniki?
+                        .catch(console.warn);
+                });
+            label.appendChild(checkbox);  //to nie wiem o co chodzi
+            label.appendChild(document.createTextNode(` ${todo.text}`));
+            document.getElementById('allTodos').appendChild(label);
+        }
+
+        initWelcomeForm(); // tutaj wywolujemy funkcje initwelcomeform do ogarniania powitania
+
+        function initWelcomeForm() {
+            const CODE_TO_EMOJI = {
+                'pl': 'pl',
+                'en': 'en',
+                'de': 'de',
+                'cz': 'cz'
+            };
+            fetch(`${API_URL}/langs`)
+                .then(processOkResponse)
+                .then(langArr => {
+                    document.getElementById('langs').innerHTML = langArr.map(lang => `
+              <label class="pure-radio">
+                <input type="radio" name="lang" value="${lang.id}">
+                ${CODE_TO_EMOJI[lang.code]}
+              </label>
+          `).join('\n');
+                    initWelcomeFormClick();
+                });
+        }
+        function initWelcomeFormClick() {
+            const welcomeForm = document.getElementById('welcomeForm');
+
+            document.getElementById('btn').addEventListener('click', (event) => {
+                event.preventDefault();
+                const formObj = {
+                    name: welcomeForm.elements.name.value,
+                    lang: welcomeForm.elements.lang.value
+                };
+                fetch(`${API_URL}?${new URLSearchParams(formObj)}`)
+                    .then(response => response.text())
+                    .then((text) => {
+                        document.getElementById('welcome').innerHTML = `
+                <h1>${text}</h1>
+            `;
+                        welcomeForm.remove();
+                        document.getElementById('todoForm').style.display = 'block';
+                    });
+            });
+        }
+        function processOkResponse(response = {}) {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error(`Status not 200 (${response.status})`);
+        }
+    }) (); //nie ograniam tej konstrukcji tzn ze to jest funkcja bez nazwy i caly kod jest w tej funkcji??
+</script>
+</body>
+</html>

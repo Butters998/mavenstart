@@ -1,0 +1,14 @@
+.todoForm
+{
+    font-size:18px;
+    height:25px;
+    padding: 10px;
+    /*border-bottom: 2px dotted #444444;*/
+}
+
+.todoForm:hover
+{
+    background-color: #f36742;
+    color: white;
+    cursor: pointer;
+}
